@@ -1,48 +1,5 @@
 #!/bin/bash
 
-cut -d’;´ f2,3,4,5,6,7,8 data.scv > test.csv
-# on vient d’enlever la colonne centrale car inutile
-
-
- HVB()
-
-
-
-# prototype de la fonction recurcive
-recurtion() {
-
-# copier les lignes ligne des entreprise consommatrices 
-awk -F";" '{if ($1=$num_hvb && $6!=‘-‘ && $2=‘-‘) print $0}' test_hvb.csv >> test_hvb1.csv
-# copier les ligne des sous stations
-
-
-
-
-
-
-return ident_conso
-}
-
-
-
-
-         HVB() {
-
-num_hvb=$3
-profondeur=1
-ident_conso=$num_hvb
-# recopier la ligne correspondante à la centrale voulue
-awk -F";" '{if ($1=$num_hvb && $6=‘-‘ && $2=‘-‘) print $0}' test_hvb.csv >> test_hvb1.csv
-
-
-recurtion profondeur
-
-
-
- return 0
-}
-#!/bin/bash
-
 # parametre d'entree : type station, type cosso, identifiant station
 
 
@@ -154,8 +111,11 @@ filtrer(){ # parametre data.csv station conso ident
 	# effacer les colone inutiles
 	if [ $conso == "indiv" ]; then
 		cut -d";" -f"$colone1",6,7,8 tmp/data_tmp.csv > tmp/data_tmp1.csv
+		awk -F";" '{gsub("-", "0"); print $0}' tmp/data_tmp1.csv > tmp/data_tmp2.csv
 	else
 		cut -d";" -f"$colone1",5,7,8 tmp/data_tmp.csv > tmp/data_tmp1.csv
+		awk -F";" '{gsub("-", "0"); print $0}' tmp/data_tmp1.csv > tmp/data_tmp2.csv
+
 	fi	
 
 	# filtrer par identifiant si besoin
@@ -168,12 +128,14 @@ filtrer(){ # parametre data.csv station conso ident
 
 calcul() { # parametre : chemin nouveau fichier csv avec donnees triees
 		# verification de l'existance de l'executable
-		if [ ! -f "/codeC/main.c" ]
+		if [ ! -f "codeC/main.c" ]
 		then
 			erreur 6
 		else
 			# Exécution du Makefile avec la règle 'run'
-			make -C /codeC/ run FILENAME="$FILENAME"
+			#make -C codeC/ run FILENAME="tmp/data_tmp2.csv"
+			gcc codeC/main.c -o main
+			./main tmp/data_tmp2.csv
 		fi
 }
 
