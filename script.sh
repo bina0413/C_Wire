@@ -120,7 +120,7 @@ filtrer(){ # parametre data.csv station conso ident
 
 	# filtrer par identifiant si besoin
 	if (( $ident != 0 )); then
-		awk -F ';' '{ if ($1 == '$ident') print $0}' tmp/data_tmp1.csv > tmp/data_tmp2.csv
+		awk -F ';' '{ if ($1 == '$ident') {gsub("-", "0"); print $0}}' tmp/data_tmp1.csv > tmp/data_tmp2.csv
 	fi
 	# retourne le chemin fichier trie au code C
 	}
@@ -134,7 +134,9 @@ calcul() { # parametre : chemin nouveau fichier csv avec donnees triees
 		else
 			# Exécution du Makefile avec la règle 'run'
 			#make -C codeC/ run FILENAME="tmp/data_tmp2.csv"
-			gcc codeC/main.c -o main
+			#gcc codeC/main.c -o main
+			#./main tmp/data_tmp2.csv
+			make -C codeC/
 			./main tmp/data_tmp2.csv
 		fi
 }
