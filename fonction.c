@@ -2,12 +2,12 @@
 #include <stdlib.h>
 //2 choix s'offre a moi: faire 1 fonction differente par station ou faire un type dynamique avec typedef
 if(a==b) {
-	typedef HVB station ;
+	typedef HVB Arbre ;
 }else if (type==a) {
-	typedef HVA station;
+	typedef HVA Arbre;
 }
 else {
-	typedef LV station;
+	typedef LV Arbre;
 }
 
 
@@ -62,10 +62,42 @@ calcule(){
     }
 
 //faire un pointeur vers fonction hva,hvb ou lv
-HV_A(int a,b,c,d){
-	HVA* new
+HV_B(int a,b,c,d){
+	HVB* new
 
 }
+Arbre* creatonArbre(Arbre* ptr_avl, int a,int c,int d ){
+	ptr_avl=malloc(sizeof(HVB));
+	if(ptr_avl==NULL){
+		("Problème d'allocation mémoire");
+		exit(6);
+	}
+	ptr_avl->id_stat=a;
+	ptr_avl->capacite=c;
+	ptr_avl->consom=d;
+	ptr_avl->fd=NULL;
+	ptr_avl->fg=NULL;
+	ptr_avl>eq=0;
+// changer le facteur d'equilibre
+	return ptr_avl;
+
+}
+insertionArbre(Arbre *ptr_avl, int a,int c,int d )
+	if(ptr_avl==NULL){
+		creatonArbre(ptr_avl,a,c,d);
+	}
+	else if(ptr_avl->id_stat==a){
+		ptr_avl->capacite+=c;		
+		ptr_avl->consom+=d;
+	}
+	else if(ptr_avl->id_stat >  a){
+		insertionArbre(ptr_avl->fg, a,c,d);
+	}
+	else {
+		insertionArbre(ptr_avl->fd, a,c,d);
+	}
+
+
 		//************comment construirel'arbre******************
 /* pour chaque station on connait le type, maintenant il y a plusieur identifiant il va falloir faire 
 un arbre par type de station et tout les identifiant sont mélangé dans l'arbre 
@@ -82,4 +114,4 @@ quand on ajout un nouveau neud:
 	1- creer l'arbre
 	2- remplire l'arbre
 	3- faire un parcour prefix
-	4- incrementrer la compteur a chaque fois
+	4- incrementrer la compteur a chaque fois*/
