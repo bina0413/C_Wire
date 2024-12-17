@@ -1,48 +1,53 @@
 #include <stdio.h>
 #include <stdlib.h>
+#define max(a,b) ((a) > (b) ? (a) : (b))
+#define min(a,b) ((a) < (b) ? (a) : (b))
+
 //2 choix s'offre a moi: faire 1 fonction differente par station ou faire un type dynamique avec typedef
-if(a==b) {
-	typedef HVB Arbre ;
-}else if (type==a) {
+//if(a==b) {
+
+/*}else if (type==a) {
 	typedef HVA Arbre;
 }
 else {
 	typedef LV Arbre;
-}
+}*/
 
 
 // Les structures
 typedef struct HVB {
-	struct HVB *fd;
+	struct HVB *fg;
 	struct HVB *fd;
 	int eq;
 	int id_stat;
-	int id_comp;
+	int hauteur;
 	int capacite;
 	int consom;
 
 }HVB;
 
 typedef struct HVA{
-	struct HVA *fd;
+	struct HVA *fg;
 	struct HVA *fd;
 	int eq;
 	int id_stat;
-	int id_comp;
+	int hauteur;
 	int capacite;
 	int consom;
 
 }HVA;
 
 typedef struct LV{
-	struct LV *fd;
+	struct LV *fg;
 	struct LV *fd;
 	int eq;
 	int id_stat;
-	int id_comp;
+	int hauteur;
 	int capacite;
 	int consom;
 }LV;
+typedef HVB Arbre ;
+
 
 
 // Les fonctions
@@ -51,23 +56,99 @@ typedef struct LV{
 /* 	ouvrir le fichier besoin fopen 
 	extraire les données csv
 	*/
-calcule(){
-	int a,b,c,d;
-	
-	while(1)
-    {
-            if(fscanf(file, "%d;%d;%d;%d\n", &a,&b,&c,&d)==EOF){break;}
-            printf("a=%d b=%d c=%d d=%d !\n", a,b,c,d);  
-            arbre(a,b,c,d);
-    }
 
 //faire un pointeur vers fonction hva,hvb ou lv
-HV_B(int a,b,c,d){
-	HVB* new
 
+
+
+
+//  FONCTIONS DE ROTATION
+
+int hauteur(Arbre *ptr_avl){
+	if(ptr_avl==NULL){
+		return 0;
+	}
+	return ptr_avl->hauteur;
 }
+
+	Arbre* rotationGauche(Arbre *ptr_avl){
+		Arbre* pivot=NULL,*P1=NULL;
+		int eq_a, eq_p;
+
+		pivot=ptr_avl->fd;
+		P1=pivot->fg;
+
+		pivot->fg=ptr_avl;
+		ptr_avl->fd=P1;
+
+		ptr_avl->hauteur=max(hauteur(ptr_avl->fg),hauteur(ptr_avl->fd)) ;
+		pivot->hauteur=max(hauteur(pivot->fg),hauteur(pivot->fd)) ;
+
+
+		/*eq_a=ptr_avl->eq;
+		eq_p=pivot->eq;
+		ptr_avl->eq= eq_a - max(eq_p, 0) - 1;
+		pivot->eq=min( eq_a-2, min(eq_a+eq_p-2, eq_p-1) );
+
+		ptr_avl=pivot;*/
+	return pivot;
+	}
+
+
+	Arbre* rotationDroite(Arbre *ptr_avl){
+		Arbre* pivot=NULL, *P1=NULL;
+
+		pivot=ptr_avl->fg;
+		P1=pivot->fd;
+
+		pivot->fd=ptr_avl;
+		ptr_avl->fg=P1;
+
+		ptr_avl->hauteur=max(hauteur(ptr_avl->fg),hauteur(ptr_avl->fd)) ;
+		pivot->hauteur=max(hauteur(pivot->fg),hauteur(pivot->fd)) ;
+
+	return pivot;
+	}
+
+	Arbre* doubleRotationGauche(Arbre *ptr_avl){
+		ptr_avl->fd=rotationDroite(ptr_avl->fd);
+		return rotationGauche(ptr_avl);
+	}
+
+	Arbre* doubleRotationDroite(Arbre *ptr_avl){
+		ptr_avl->fg=rotationGauche(ptr_avl->fg);
+		return rotationDroite(ptr_avl);
+	}
+
+
+
+Arbre * equilibrage(Arbre *ptr_avl){
+	if(ptr_avl->eq >1){
+		printf("besoin d'equilibrage");
+		if(ptr_avl->fd->eq >=0){
+
+			ptr_avl= rotationGauche(ptr_avl);
+		}
+		else{
+			ptr_avl=doubleRotationGauche(ptr_avl);
+		}
+	}
+	else if(ptr_avl->eq <-1){
+			if(ptr_avl->fg->eq <=0){
+				ptr_avl=rotationDroite(ptr_avl);
+				}
+		else{
+			ptr_avl=doubleRotationDroite(ptr_avl);
+		}
+
+	}
+	return ptr_avl;
+}
+
+// fonction traitement avl
+
 Arbre* creatonArbre(Arbre* ptr_avl, int a,int c,int d ){
-	ptr_avl=malloc(sizeof(HVB));
+	ptr_avl=malloc(sizeof(Arbre));
 	if(ptr_avl==NULL){
 		("Problème d'allocation mémoire");
 		exit(6);
@@ -77,26 +158,71 @@ Arbre* creatonArbre(Arbre* ptr_avl, int a,int c,int d ){
 	ptr_avl->consom=d;
 	ptr_avl->fd=NULL;
 	ptr_avl->fg=NULL;
-	ptr_avl>eq=0;
-// changer le facteur d'equilibre
+	ptr_avl->eq=0;
+	ptr_avl->hauteur=1;
 	return ptr_avl;
 
 }
-insertionArbre(Arbre *ptr_avl, int a,int c,int d )
+Arbre* insertionArbre(Arbre *ptr_avl, int a,int c,int d){
 	if(ptr_avl==NULL){
-		creatonArbre(ptr_avl,a,c,d);
+			printf("création %d\n",a);
+		return creatonArbre(ptr_avl,a,c,d);
+
 	}
 	else if(ptr_avl->id_stat==a){
+		
 		ptr_avl->capacite+=c;		
 		ptr_avl->consom+=d;
 	}
 	else if(ptr_avl->id_stat >  a){
-		insertionArbre(ptr_avl->fg, a,c,d);
+		printf("fils gauche de \n");
+		ptr_avl->fg = insertionArbre(ptr_avl->fg,a,c,d);
+	
 	}
-	else {
-		insertionArbre(ptr_avl->fd, a,c,d);
-	}
+	else if(ptr_avl->id_stat <  a){
+		printf("%d est fils droit de %d\n",a,ptr_avl->id_stat);
+		ptr_avl->fd= insertionArbre(ptr_avl->fd,a,c,d);
 
+
+	}
+	/*if(*h != 0){
+		ptr_avl->eq += *h;
+		ptr_avl=equilibrage(ptr_avl,h);
+		if(ptr_avl->eq ==0){
+			*h=0;
+		}
+		else{
+			*h=1;
+		}
+}
+		*/
+		
+
+		ptr_avl->eq=hauteur(ptr_avl->fd)-hauteur(ptr_avl->fg);
+		ptr_avl->hauteur=max(hauteur(ptr_avl->fg),hauteur(ptr_avl->fd))+1;
+		ptr_avl=equilibrage(ptr_avl);
+
+
+	return ptr_avl;
+}
+
+/*Arbre* suppression(){
+
+
+
+	free()
+}
+*/
+int parcoursArbre(Arbre*ptr_avl,FILE* fichier){
+	if(ptr_avl!=NULL){
+	parcoursArbre(ptr_avl->fg,fichier);
+	printf("%d:%u:%u \n",ptr_avl->id_stat, ptr_avl->capacite, ptr_avl->consom);
+	fprintf(fichier,"%d:%u:%u\n",ptr_avl->id_stat, ptr_avl->capacite, ptr_avl->consom);
+	parcoursArbre(ptr_avl->fd,fichier);
+	}
+		return 0;
+
+}
 
 		//************comment construirel'arbre******************
 /* pour chaque station on connait le type, maintenant il y a plusieur identifiant il va falloir faire 
@@ -114,4 +240,6 @@ quand on ajout un nouveau neud:
 	1- creer l'arbre
 	2- remplire l'arbre
 	3- faire un parcour prefix
-	4- incrementrer la compteur a chaque fois*/
+	4- incrementrer la compteur a chaque fois
+*/
+	
