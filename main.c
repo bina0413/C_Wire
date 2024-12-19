@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
         return 6;  // Code d'erreur
     }
 
-    printf("Le fichier %s a été ouvert avec succès !\n", filename);
+    printf("Le fichier %s a été ouvert avec succès !!\n", filename);
     int a,c, b,d;
 
     Arbre* ptr_avl=NULL;
@@ -30,21 +30,21 @@ int main(int argc, char *argv[]) {
             if(fscanf(file, "%d;%d;%d;%d\n", &a,&b,&c,&d)==EOF){break;}
             printf("a=%d b=%d c=%u d=%u\n", a,b,c,d);  
             ptr_avl=insertionArbre(ptr_avl,a,c,d);
-
-         printf("passons a l'ecriture ");
     }
 
 
     // Lire et traiter le fichier...
     FILE *ficher = fopen("calcule.csv", "w+");
     if (ficher == NULL) {
-        perror("Erreur lors de l'ouverture du fichier");
+        printf("Erreur lors de l'ouverture du fichier");
         return 6;  // Code d'erreur
     }
     printf("Le fichier %s a été ouvert avec succès !\n", "calcule.csv");
     parcoursArbre(ptr_avl,ficher);
     fclose(file);
     fclose(ficher);
+    // liberer la memoire
+    //ameliorer la robustesse
 
     return 0;  // Succès
 }
