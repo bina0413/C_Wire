@@ -3,63 +3,18 @@
 #define max(a,b) ((a) > (b) ? (a) : (b))
 #define min(a,b) ((a) < (b) ? (a) : (b))
 
-//2 choix s'offre a moi: faire 1 fonction differente par station ou faire un type dynamique avec typedef
-//if(a==b) {
-
-/*}else if (type==a) {
-	typedef HVA Arbre;
-}
-else {
-	typedef LV Arbre;
-}*/
-
 
 // Les structures
-typedef struct HVB {
-	struct HVB *fg;
-	struct HVB *fd;
+typedef struct Arbre {
+	struct Arbre *fg;
+	struct Arbre *fd;
 	int eq;
 	int id_stat;
 	int hauteur;
 	int capacite;
 	int consom;
 
-}HVB;
-
-typedef struct HVA{
-	struct HVA *fg;
-	struct HVA *fd;
-	int eq;
-	int id_stat;
-	int hauteur;
-	int capacite;
-	int consom;
-
-}HVA;
-
-typedef struct LV{
-	struct LV *fg;
-	struct LV *fd;
-	int eq;
-	int id_stat;
-	int hauteur;
-	int capacite;
-	int consom;
-}LV;
-typedef HVB Arbre ;
-
-
-
-// Les fonctions
-
-
-/* 	ouvrir le fichier besoin fopen 
-	extraire les données csv
-	*/
-
-//faire un pointeur vers fonction hva,hvb ou lv
-
-
+}Arbre;
 
 
 //  FONCTIONS DE ROTATION
@@ -150,7 +105,7 @@ Arbre * equilibrage(Arbre *ptr_avl){
 Arbre* creatonArbre(Arbre* ptr_avl, int a,int c,int d ){
 	ptr_avl=malloc(sizeof(Arbre));
 	if(ptr_avl==NULL){
-		("Problème d'allocation mémoire");
+		printf("Problème d'allocation mémoire");
 		exit(6);
 	}
 	ptr_avl->id_stat=a;
@@ -165,7 +120,7 @@ Arbre* creatonArbre(Arbre* ptr_avl, int a,int c,int d ){
 }
 Arbre* insertionArbre(Arbre *ptr_avl, int a,int c,int d){
 	if(ptr_avl==NULL){
-			printf("création %d\n",a);
+			//printf("création %d\n",a);
 		return creatonArbre(ptr_avl,a,c,d);
 
 	}
@@ -175,12 +130,11 @@ Arbre* insertionArbre(Arbre *ptr_avl, int a,int c,int d){
 		ptr_avl->consom+=d;
 	}
 	else if(ptr_avl->id_stat >  a){
-		printf("fils gauche de \n");
 		ptr_avl->fg = insertionArbre(ptr_avl->fg,a,c,d);
 	
 	}
 	else if(ptr_avl->id_stat <  a){
-		printf("%d est fils droit de %d\n",a,ptr_avl->id_stat);
+		//printf("%d est fils droit de %d\n",a,ptr_avl->id_stat);
 		ptr_avl->fd= insertionArbre(ptr_avl->fd,a,c,d);
 
 
@@ -238,8 +192,8 @@ quand on ajout un nouveau neud:
 
 /* déroulé de l'algo:
 	1- creer l'arbre
-	2- remplire l'arbre
-	3- faire un parcour prefix
-	4- incrementrer la compteur a chaque fois
+	2- remplire l'arbre equilibrer si besoin
+	3- faire un parcours prefix
+	4- 
 */
 	
