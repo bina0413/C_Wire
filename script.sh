@@ -125,6 +125,22 @@ filtrer(){ # parametre data.csv station conso ident
 	# retourne le chemin fichier trie au code C
 	}
 
+	filtrerLVall() {
+	awk -F ';' '{if ($4 != "-" && ($5 == "-" || $6 == "-") ) {print $0}}' imput/data.csv > tmp/data_tmp.csv
+	# si la colonne 5 est vide alors copier colonne 6 dans 5 
+	awk -F ';' '{if ($5 == "-") {$5 = $6;} gsub("-", "0")}' tmp/data_tmp.csv
+	cut -d";" -f4,5,7,8 tmp/data_tmp.csv > tmp/data_tmp1.csv
+	awk -F ';' '{ gsub("-", "0"); print $0}' tmp/data_tmp1.csv > tmp/data_tmp2.csv
+
+	
+		# filtrer par identifiant si besoin
+
+	if (( $ident != 0 )); then
+		awk -F ';' '{ if ($1 == '$ident') {gsub("-", "0"); print $0}}' tmp/data_tmp1.csv > tmp/data_tmp2.csv
+	fi
+
+	}
+
 
 calcul() { # parametre : chemin nouveau fichier csv avec donnees triees
 		# verification de l'existance de l'executable
@@ -132,12 +148,7 @@ calcul() { # parametre : chemin nouveau fichier csv avec donnees triees
 		then
 			erreur 6
 		else
-			# Exécution du Makefile avec la règle 'run'
-			#make -C codeC/ run FILENAME="tmp/data_tmp2.csv"
-			#gcc codeC/main.c -o main
-			#./main tmp/data_tmp2.csv
 			make -C codeC/
-			./main tmp/data_tmp2.csv
 		fi
 }
 
@@ -153,18 +164,29 @@ conso=$3
 if [ -z "$4" ] 
 then
 	ident=0
+	fichier=$station"_"$conso".csv"
 else
 	ident=$4
+	fichier=$station"_"$conso"_"$ident".csv"
 fi
 verif $chemin $station $conso 			# procède aux verifications des parametre
 cp $chemin imput/data.csv 				# copier le fichier d'entrée dans imput
 dossier									# verifie repertoires graph et tmp
  	
 temps1=$(date +%s)	
-	filtrer $chemin $station $conso $ident 	#filtrage des donnees selon les parametre
-	calcul $chemin  						# appel du programme de calcul C prend le fichier trie en parametre
+	if [ $conso == "all" ]	#filtrage des donnees selon les parametre
+	then	
+		filtrerLVall
+	else
+		filtrer 			
+	fi
+	calcul						# appel du programme de calcul C prend le fichier trie en parametre
 temps2=$(date +%s)	
-duree=$((temps2-temps1)) 				#calcul de la duree de l'execution
+duree=$((temps2-temps1)) 		#calcul de la duree de l'execution
+echo "Station $station:Capacité:Consomation ($conso)" > fichier_tmp.csv
+sort -t ":" -k 2 -n codeC/calcule.csv
+cat < fichier_tmp.csv | head codeC/calcule.csv >> $fichier
+cat < fichier_tmp.csv | tail codeC/calcule.csv >> $fichier
 echo "le programme a duré $duree secondes"
 
 
